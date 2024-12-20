@@ -5,11 +5,12 @@ object HexUtils {
         val hex = hexString.replace(" ", "")
         val len = hex.length
         val result = ByteArray(len / 2)
-        
+
         for (i in 0 until len step 2) {
-            result[i / 2] = ((Character.digit(hex[i], 16) shl 4) + Character.digit(hex[i + 1], 16)).toByte()
+            result[i / 2] =
+                ((Character.digit(hex[i], 16) shl 4) + Character.digit(hex[i + 1], 16)).toByte()
         }
-        
+
         return result
     }
 

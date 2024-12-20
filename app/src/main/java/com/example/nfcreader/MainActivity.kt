@@ -13,8 +13,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.example.nfcreader.ui.theme.NFCReaderTheme
 import com.example.nfcreader.nfc.NFCCardReader
+import com.example.nfcreader.ui.theme.NFCReaderTheme
 import com.example.nfcreader.utils.HexUtils.bytesToHex
 
 @Suppress("DEPRECATION")
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private var pendingIntent: PendingIntent? = null
     private val viewModel: NFCViewModel by viewModels()
-    
+
     // Intent filters for handling NFC intents
     private val intentFiltersArray: Array<IntentFilter> by lazy {
         arrayOf(
@@ -44,10 +44,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Initialize NFC adapter
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        
+
         // Create a PendingIntent for NFC intent handling
         pendingIntent = PendingIntent.getActivity(
             this, 0,
@@ -61,9 +61,11 @@ class MainActivity : ComponentActivity() {
                     nfcAdapter == null -> {
                         ErrorScreen(getString(R.string.error_nfc_not_supported))
                     }
+
                     !nfcAdapter?.isEnabled!! -> {
                         ErrorScreen(getString(R.string.error_nfc_disabled))
                     }
+
                     else -> {
                         NFCCardScreen(viewModel)
                     }
@@ -104,9 +106,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     private fun processNFCTag(tag: Tag?) {
         viewModel.updateNFCStatus(NFCStatus.Reading)
-        
+
         tag?.let {
             try {
                 // Try to get an IsoDep instance for the tag

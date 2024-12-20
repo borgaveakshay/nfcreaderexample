@@ -14,8 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nfcreader.nfc.CardType
 import com.example.nfcreader.nfc.NFCCardReader
 import com.example.nfcreader.utils.collectAsLifecycleAware
 
@@ -48,14 +50,17 @@ fun NFCCardScreen(viewModel: NFCViewModel) {
                 is NFCStatus.Waiting -> {
                     EmptyCardState("Please tap your card")
                 }
+
                 is NFCStatus.Reading -> {
                     EmptyCardState("Reading card...")
                 }
+
                 is NFCStatus.Success -> {
                     cardData?.let { data ->
                         CardDisplay(data)
                     }
                 }
+
                 is NFCStatus.Error -> {
                     EmptyCardState(
                         message = (nfcStatus as NFCStatus.Error).message,
@@ -67,8 +72,18 @@ fun NFCCardScreen(viewModel: NFCViewModel) {
     }
 }
 
+@Preview
 @Composable
-fun CardDisplay(cardData: NFCCardReader.CardData) {
+fun CardDisplay(
+    cardData: NFCCardReader.CardData = NFCCardReader.CardData(
+        cardType = CardType.MASTERCARD,
+        aid = "A0000000041010",
+        lastFourDigits = "1234",
+        expiryDate = "04/28",
+        cardholderName = "ABC"
+
+    )
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -103,7 +118,7 @@ fun CardDisplay(cardData: NFCCardReader.CardData) {
 
             // Card Number
             Text(
-                text = cardData.lastFourDigits?.let { 
+                text = cardData.lastFourDigits?.let {
                     "**** **** **** $it"
                 } ?: "**** **** **** ****",
                 color = Color.White,
@@ -147,8 +162,12 @@ fun CardDisplay(cardData: NFCCardReader.CardData) {
     }
 }
 
+@Preview
 @Composable
-fun EmptyCardState(message: String, isError: Boolean = false) {
+fun EmptyCardState(
+    message: String = "Error while fetching the card details",
+    isError: Boolean = true
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,8 +188,8 @@ fun EmptyCardState(message: String, isError: Boolean = false) {
             }
             Text(
                 text = message,
-                color = if (isError) MaterialTheme.colorScheme.error 
-                       else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isError) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )

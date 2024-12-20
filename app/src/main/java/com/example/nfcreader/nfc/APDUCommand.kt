@@ -14,14 +14,14 @@ data class APDUCommand(
         command.add(ins)
         command.add(p1)
         command.add(p2)
-        
+
         if (data.isNotEmpty()) {
             command.add(data.size.toByte())
             data.forEach { command.add(it) }
         }
-        
+
         le?.let { command.add(it.toByte()) }
-        
+
         return command.toByteArray()
     }
 }

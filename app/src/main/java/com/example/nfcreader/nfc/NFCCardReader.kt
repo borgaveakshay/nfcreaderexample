@@ -8,7 +8,7 @@ import com.example.nfcreader.utils.HexUtils.hexToByteArray
 class NFCCardReader(private val isoDep: IsoDep) {
     companion object {
         private const val TAG = "NFCCardReader"
-        
+
         // Standard AIDs for payment cards
         private val KNOWN_AIDS = arrayOf(
             "A0000000031010", // VISA
@@ -34,7 +34,7 @@ class NFCCardReader(private val isoDep: IsoDep) {
     fun readCard(): CardData {
         try {
             isoDep.connect()
-            
+
             // Try to select each known AID
             for (aid in KNOWN_AIDS) {
                 val response = selectAID(aid)
@@ -43,7 +43,7 @@ class NFCCardReader(private val isoDep: IsoDep) {
                     return processCardResponse(cardType, aid, response.data)
                 }
             }
-            
+
             return CardData(CardType.UNKNOWN, "Unknown")
         } finally {
             try {
@@ -66,7 +66,11 @@ class NFCCardReader(private val isoDep: IsoDep) {
         return sendCommand(command)
     }
 
-    private fun processCardResponse(cardType: CardType, aid: String, responseData: ByteArray): CardData {
+    private fun processCardResponse(
+        cardType: CardType,
+        aid: String,
+        responseData: ByteArray
+    ): CardData {
         // Process card-specific data based on the card type
         return when (cardType) {
             CardType.VISA -> processVisaCard(aid, responseData)
@@ -83,26 +87,30 @@ class NFCCardReader(private val isoDep: IsoDep) {
     private fun processVisaCard(aid: String, responseData: ByteArray): CardData {
         try {
             // Get Processing Options
-            val gpoResponse = sendCommand(APDUCommand(
-                cla = 0x80.toByte(),
-                ins = 0xA8.toByte(),
-                p1 = 0x00,
-                p2 = 0x00,
-                data = hexToByteArray("8300")
-            ))
+            val gpoResponse = sendCommand(
+                APDUCommand(
+                    cla = 0x80.toByte(),
+                    ins = 0xA8.toByte(),
+                    p1 = 0x00,
+                    p2 = 0x00,
+                    data = hexToByteArray("8300")
+                )
+            )
 
             if (!gpoResponse.isSuccess) {
                 return CardData(CardType.VISA, aid)
             }
 
             // Read Record
-            val readRecordResponse = sendCommand(APDUCommand(
-                cla = 0x00,
-                ins = 0xB2.toByte(),
-                p1 = 0x01,
-                p2 = 0x0C,
-                le = 0x00
-            ))
+            val readRecordResponse = sendCommand(
+                APDUCommand(
+                    cla = 0x00,
+                    ins = 0xB2.toByte(),
+                    p1 = 0x01,
+                    p2 = 0x0C,
+                    le = 0x00
+                )
+            )
 
             if (!readRecordResponse.isSuccess) {
                 return CardData(CardType.VISA, aid)
@@ -110,7 +118,7 @@ class NFCCardReader(private val isoDep: IsoDep) {
 
             // Parse response data
             val recordData = bytesToHex(readRecordResponse.data)
-            
+
             // Extract card info (this is a simplified example)
             val lastFourDigits = extractLastFourDigits(recordData)
             val expiryDate = extractExpiryDate(recordData)
@@ -132,26 +140,30 @@ class NFCCardReader(private val isoDep: IsoDep) {
     private fun processMastercardCard(aid: String, responseData: ByteArray): CardData {
         try {
             // Similar to Visa but with Mastercard-specific processing
-            val gpoResponse = sendCommand(APDUCommand(
-                cla = 0x80.toByte(),
-                ins = 0xA8.toByte(),
-                p1 = 0x00,
-                p2 = 0x00,
-                data = hexToByteArray("8300")
-            ))
+            val gpoResponse = sendCommand(
+                APDUCommand(
+                    cla = 0x80.toByte(),
+                    ins = 0xA8.toByte(),
+                    p1 = 0x00,
+                    p2 = 0x00,
+                    data = hexToByteArray("8300")
+                )
+            )
 
             if (!gpoResponse.isSuccess) {
                 return CardData(CardType.MASTERCARD, aid)
             }
 
             // Read Record
-            val readRecordResponse = sendCommand(APDUCommand(
-                cla = 0x00,
-                ins = 0xB2.toByte(),
-                p1 = 0x01,
-                p2 = 0x0C,
-                le = 0x00
-            ))
+            val readRecordResponse = sendCommand(
+                APDUCommand(
+                    cla = 0x00,
+                    ins = 0xB2.toByte(),
+                    p1 = 0x01,
+                    p2 = 0x0C,
+                    le = 0x00
+                )
+            )
 
             if (!readRecordResponse.isSuccess) {
                 return CardData(CardType.MASTERCARD, aid)
@@ -159,7 +171,7 @@ class NFCCardReader(private val isoDep: IsoDep) {
 
             // Parse response data
             val recordData = bytesToHex(readRecordResponse.data)
-            
+
             // Extract card info (this is a simplified example)
             val lastFourDigits = extractLastFourDigits(recordData)
             val expiryDate = extractExpiryDate(recordData)

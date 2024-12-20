@@ -31,9 +31,9 @@ fun ErrorScreen(message: String) {
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.error
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = message,
                 style = MaterialTheme.typography.headlineSmall,
