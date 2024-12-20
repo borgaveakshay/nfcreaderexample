@@ -17,14 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nfcreader.nfc.CardType
 import com.example.nfcreader.nfc.NFCCardReader
-import com.example.nfcreader.utils.collectAsLifecycleAware
+
 
 @Composable
 fun NFCCardScreen(viewModel: NFCViewModel) {
-    val nfcStatus by viewModel.nfcStatus.collectAsLifecycleAware()
-    val cardData by viewModel.cardData.collectAsLifecycleAware()
+    val nfcStatus by viewModel.nfcStatus.collectAsStateWithLifecycle()
+    val cardData by viewModel.cardData.collectAsStateWithLifecycle()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
