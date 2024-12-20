@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NFC Reader</string>
+    <string name="error_nfc_not_supported">This device doesn\'t support NFC</string>
+    <string name="error_nfc_disabled">Please enable NFC in your device settings</string>
+</resources> 
